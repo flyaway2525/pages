@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 const links = [
-  { to: '/word-game', label: 'Word Game', desc: '五十音しりとり陣取り' },
+  { to: '/word-game', label: 'Word Game', desc: 'しりとりスプラトゥーン' },
   { to: '/about', label: 'About', desc: '自己紹介・プロフィール' },
   { to: '/works', label: 'Works', desc: '制作物・ポートフォリオ' },
   { to: '/blog', label: 'Blog', desc: '記事・ノート' },
