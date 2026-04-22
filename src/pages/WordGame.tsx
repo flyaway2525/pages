@@ -1,5 +1,16 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+
+const EASTER_EGGS: { word: string; message: string }[] = [
+  { word: '伊沢拓司', message: '東大王！' },
+  { word: '河村拓哉', message: '二極点河村' },
+  { word: 'ふくらP', message: 'パズル王！' },
+  { word: '鶴崎修功', message: 'IQ165の天才！' },
+  { word: '須貝駿貴', message: 'ナイスガイの須貝です！' },
+  { word: '山本祥彰', message: '漢字王！' },
+  { word: '東問', message: 'お菓子大好き！' },
+  { word: '東言', message: 'ゴンゴール！' },
+];
 
 type Player = 'red' | 'blue';
 type CellOwner = Player | null;
@@ -132,6 +143,8 @@ export default function WordGame() {
   const [notice, setNotice] = useState('');
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
+  const [showTriviaModal, setShowTriviaModal] = useState(false);
+  const [triviaMessage, setTriviaMessage] = useState('');
   const [hideRuleSettings, setHideRuleSettings] = useState(false);
   const [startCharMode, setStartCharMode] = useState<'random' | 'free' | 'fixed'>('fixed');
   const [fixedStartChar, setFixedStartChar] = useState('り');
@@ -300,6 +313,12 @@ export default function WordGame() {
       return;
     }
 
+    const easterEgg = EASTER_EGGS.find((e) => e.word === rawWord);
+    if (easterEgg) {
+      setTriviaMessage(easterEgg.message);
+      setShowTriviaModal(true);
+    }
+
     const kanaChars = extractKanaChars(rawWord);
     if (kanaChars.length === 0) {
       setError('ひらがな・カタカナを1文字以上含む単語を入力してください。');
@@ -425,6 +444,14 @@ export default function WordGame() {
       setShowResultModal(false);
     }
   }, [isFinished]);
+
+  const logSectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (logSectionRef.current) {
+      logSectionRef.current.scrollTop = 0;
+    }
+  }, [logs, error, notice]);
 
   useEffect(() => {
     const seen = localStorage.getItem(RULES_SEEN_KEY);
@@ -582,7 +609,8 @@ export default function WordGame() {
                 <strong>前の単語:</strong> {previousWord ?? '---'}
               </div>
               <div>
-                <strong>次の頭文字:</strong> {lastEndBaseChar ?? '自由'}
+                <strong>次の頭文字:</strong>{' '}
+                <span className="next-char-badge">{lastEndBaseChar ?? '自由'}</span>
               </div>
             </div>
 
@@ -616,7 +644,7 @@ export default function WordGame() {
           ) : null}
         </div>
 
-        <section className="game-logs game-side">
+        <section className="game-logs game-side" ref={logSectionRef}>
         <h2>入力ログ</h2>
         <div className="game-log-messages">
           {error ? <p className="game-error">{error}</p> : null}
@@ -773,6 +801,17 @@ export default function WordGame() {
               </div>
             </div>
             <button type="button" onClick={() => setShowResultModal(false)}>
+              閉じる
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {showTriviaModal ? (
+        <div className="trivia-modal-backdrop" role="dialog" aria-modal="true" aria-label="小ネタ">
+          <div className="trivia-modal">
+            <p>{triviaMessage}</p>
+            <button type="button" onClick={() => setShowTriviaModal(false)}>
               閉じる
             </button>
           </div>
