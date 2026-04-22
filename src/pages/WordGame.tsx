@@ -303,7 +303,12 @@ export default function WordGame() {
     setError('');
     setNotice('');
 
-    if (!gameStarted || isFinished) {
+    if (!gameStarted) {
+      setNotice('ゲームを開始してください');
+      return;
+    }
+
+    if (isFinished) {
       return;
     }
 
@@ -396,7 +401,12 @@ export default function WordGame() {
   };
 
   const passTurn = () => {
-    if (!gameStarted || isFinished) {
+    if (!gameStarted) {
+      setNotice('ゲームを開始してください');
+      return;
+    }
+
+    if (isFinished) {
       return;
     }
 
@@ -625,10 +635,10 @@ export default function WordGame() {
                 }}
                 placeholder="単語を入力"
               />
-              <button type="submit" disabled={!gameStarted || isFinished || isReplaying}>
+              <button type="submit" disabled={isFinished || isReplaying}>
                 提出
               </button>
-              <button type="button" onClick={passTurn} disabled={!gameStarted || isFinished || isReplaying}>
+              <button type="button" onClick={passTurn} disabled={isFinished || isReplaying}>
                 パス
               </button>
             </form>
