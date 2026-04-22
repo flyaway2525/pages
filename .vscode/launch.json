@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Start Dev Server (Terminal)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "cmd /c setup.bat dev",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Web Server (Chrome)",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "http://localhost:5173/pages/",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Development Server"
+        },
+        {
+            "name": "Open Preview (Chrome)",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "http://localhost:4173/pages/",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Preview Production Build"
+        }
+    ]
+}

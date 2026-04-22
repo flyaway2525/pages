@@ -4,8 +4,14 @@
     {
       "label": "Setup Local Environment",
       "type": "shell",
-      "command": "cmd",
-      "args": ["/c", "setup.bat", "install"],
+      "command": "setup.bat",
+      "args": ["install"],
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
       "isBackground": false,
       "group": {
         "kind": "build",
@@ -20,21 +26,44 @@
     {
       "label": "Start Development Server",
       "type": "shell",
-      "command": "cmd",
-      "args": ["/c", "setup.bat", "dev"],
+      "command": "setup.bat",
+      "args": ["dev"],
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
       "isBackground": true,
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
         "clear": true
       },
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\s*VITE\\s+v",
+          "endsPattern": "^\\s*.*Local:\\s+http://localhost:[0-9]+/pages/"
+        }
+      }
     },
     {
       "label": "Build for Production",
       "type": "shell",
-      "command": "cmd",
-      "args": ["/c", "setup.bat", "build"],
+      "command": "setup.bat",
+      "args": ["build"],
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
       "group": "build",
       "presentation": {
         "reveal": "always",
@@ -45,15 +74,33 @@
     {
       "label": "Preview Production Build",
       "type": "shell",
-      "command": "cmd",
-      "args": ["/c", "setup.bat", "preview"],
+      "command": "setup.bat",
+      "args": ["preview"],
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
       "isBackground": true,
+      "dependsOn": "Build for Production",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
         "clear": true
       },
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\s*>\\s+vite\\s+preview$",
+          "endsPattern": "^\\s*.*Local:\\s+http://localhost:[0-9]+/pages/"
+        }
+      }
     }
   ]
 }
