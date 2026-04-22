@@ -131,6 +131,7 @@ export default function WordGame() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [showRulesModal, setShowRulesModal] = useState(false);
+  const [showResultModal, setShowResultModal] = useState(false);
   const [hideRuleSettings, setHideRuleSettings] = useState(false);
   const [startCharMode, setStartCharMode] = useState<'random' | 'free' | 'fixed'>('fixed');
   const [fixedStartChar, setFixedStartChar] = useState('り');
@@ -199,6 +200,7 @@ export default function WordGame() {
     setReplayTurn(null);
     setError('');
     setNotice('');
+    setShowResultModal(false);
     setGameStarted(false);
   };
 
@@ -370,6 +372,7 @@ export default function WordGame() {
 
     if (boardFilled) {
       setIsFinished(true);
+      setShowResultModal(true);
     }
   };
 
@@ -394,6 +397,7 @@ export default function WordGame() {
     if (nextPasses >= 2) {
       setConsecutivePasses(nextPasses);
       setIsFinished(true);
+      setShowResultModal(true);
       return;
     }
 
@@ -409,6 +413,19 @@ export default function WordGame() {
     return score.red > score.blue ? '赤の勝ち' : '青の勝ち';
   }, [isFinished, score.blue, score.red]);
 
+  const winnerColorClass = useMemo(() => {
+    if (!isFinished || score.red === score.blue) {
+      return 'draw';
+    }
+    return score.red > score.blue ? 'red' : 'blue';
+  }, [isFinished, score.blue, score.red]);
+
+  useEffect(() => {
+    if (!isFinished) {
+      setShowResultModal(false);
+    }
+  }, [isFinished]);
+
   useEffect(() => {
     const seen = localStorage.getItem(RULES_SEEN_KEY);
     if (!seen) {
@@ -423,10 +440,12 @@ export default function WordGame() {
 
   return (
     <main className="page game-page">
-      <h1>しりとりスプラトゥーン</h1>
-      <p className="game-lead">
-        50音表上で陣取りゲーム！しりとりをしながらより多くの文字を塗りつぶせ！
-      </p>
+      <div className="game-heading">
+        <h1>しりとりスプラトゥーン</h1>
+        <p className="game-lead">
+          50音表上で陣取りゲーム！しりとりをしながらより多くの文字を塗りつぶせ！
+        </p>
+      </div>
 
       <section className="game-layout">
         <div className="game-main">
@@ -683,6 +702,30 @@ export default function WordGame() {
         </section>
       </section>
 
+      <div className="game-divider" aria-hidden="true" />
+
+      <section className="game-memo" aria-label="インスピレーションとクレジット">
+        <h2>Inspiration / Credit</h2>
+        <p className="game-memo-item">
+          <span className="game-memo-label">Idea</span>
+          <span>QuizKnock 動画</span>
+        </p>
+        <p className="game-memo-item">
+          <span className="game-memo-label">Title</span>
+          <span>【塗られたら塗り返せ】しりとりで使った文字を自分の陣地にできるゲームで大白熱【しりとりスプラトゥーン】</span>
+        </p>
+        <p className="game-memo-item">
+          <span className="game-memo-label">Source</span>
+          <a href="https://www.youtube.com/watch?v=U6RiWWDAmsM" target="_blank" rel="noreferrer">
+            https://www.youtube.com/watch?v=U6RiWWDAmsM
+          </a>
+        </p>
+        <p className="game-memo-item">
+          <span className="game-memo-label">Built with</span>
+          <span>GitHub Copilot</span>
+        </p>
+      </section>
+
       <Link to="/" className="back-link">
         ← Homeに戻る
       </Link>
@@ -700,6 +743,36 @@ export default function WordGame() {
               <li>全マス使用または両者連続パスで終了し、塗りマス数が多い側の勝ちです。</li>
             </ul>
             <button type="button" onClick={closeRulesModal}>
+              閉じる
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {showResultModal ? (
+        <div className="result-modal-backdrop" role="dialog" aria-modal="true" aria-label="リザルト">
+          <div className="result-modal">
+            <h2>リザルト</h2>
+            <p className={`result-winner ${winnerColorClass}`}>{winnerLabel}</p>
+            <div className="result-stats">
+              <div>
+                <span>赤チーム</span>
+                <strong>{score.red} マス</strong>
+              </div>
+              <div>
+                <span>青チーム</span>
+                <strong>{score.blue} マス</strong>
+              </div>
+              <div>
+                <span>総マス数</span>
+                <strong>{totalCells} マス</strong>
+              </div>
+              <div>
+                <span>マス差</span>
+                <strong>{Math.abs(score.red - score.blue)} マス</strong>
+              </div>
+            </div>
+            <button type="button" onClick={() => setShowResultModal(false)}>
               閉じる
             </button>
           </div>
