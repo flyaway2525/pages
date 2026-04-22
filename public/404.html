@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>GitHub Pages SPA Redirect</title>
+    <script>
+      // Redirect unknown paths to index.html while preserving the original route.
+      (function () {
+        const segmentCount = 1;
+        const l = window.location;
+        const path = l.pathname
+          .split('/')
+          .slice(1 + segmentCount)
+          .join('/');
+
+        const redirectUrl =
+          l.protocol +
+          '//' +
+          l.hostname +
+          (l.port ? ':' + l.port : '') +
+          l.pathname.split('/').slice(0, 1 + segmentCount).join('/') +
+          '/?/' +
+          path.replace(/&/g, '~and~') +
+          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash;
+
+        l.replace(redirectUrl);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
