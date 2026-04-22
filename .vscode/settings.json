@@ -1,0 +1,17 @@
+{
+  "terminal.integrated.defaultProfile.windows": "PowerShell (Workspace Node)",
+  "terminal.integrated.env.windows": {
+    "PATH": "${workspaceFolder}\\.tools\\node\\current;${env:PATH}"
+  },
+  "terminal.integrated.profiles.windows": {
+    "PowerShell (Workspace Node)": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "$env:PATH='${workspaceFolder}\\.tools\\node\\current;' + $env:PATH; function global:npm { & '${workspaceFolder}\\.tools\\node\\current\\npm.cmd' @args }; function global:npx { & '${workspaceFolder}\\.tools\\node\\current\\npx.cmd' @args }"
+      ]
+    }
+  }
+}
