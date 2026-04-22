@@ -5,8 +5,8 @@
 }
 
 body {
-  font-family: 'Noto Sans JP', sans-serif;
-  background-color: #f5f5f5;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  background-color: #f8f9fa;
   color: #333;
 }
 

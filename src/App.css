@@ -1,1 +1,98 @@
-/* App スタイル */
+/* ホーム */
+.home {
+  max-width: 960px;
+  margin: 80px auto;
+  padding: 0 24px;
+}
+
+.home-hero {
+  margin-bottom: 48px;
+}
+
+.home-hero h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  color: #111;
+}
+
+.home-sub {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* リンクグリッド */
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .link-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.link-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.link-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.link-card-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.link-card-desc {
+  font-size: 0.875rem;
+  color: #888;
+}
+
+/* 仮ページ共通 */
+.page {
+  max-width: 960px;
+  margin: 80px auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.page p {
+  color: #555;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #555;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #111;
+  text-decoration: underline;
+}
