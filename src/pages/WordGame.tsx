@@ -51,6 +51,59 @@ const BOARD_KEYS = BOARD_ROWS.flat().filter(Boolean);
 const BOARD_KEY_SET = new Set<string>(BOARD_KEYS);
 const RULES_SEEN_KEY = 'word-game-rules-seen-v1';
 
+const AIUEO_ORDER = [
+  'あ',
+  'い',
+  'う',
+  'え',
+  'お',
+  'か',
+  'き',
+  'く',
+  'け',
+  'こ',
+  'さ',
+  'し',
+  'す',
+  'せ',
+  'そ',
+  'た',
+  'ち',
+  'つ',
+  'て',
+  'と',
+  'な',
+  'に',
+  'ぬ',
+  'ね',
+  'の',
+  'は',
+  'ひ',
+  'ふ',
+  'へ',
+  'ほ',
+  'ま',
+  'み',
+  'む',
+  'め',
+  'も',
+  'や',
+  'ゆ',
+  'よ',
+  'ら',
+  'り',
+  'る',
+  'れ',
+  'ろ',
+  'わ',
+  'を',
+  'ん',
+  'ー',
+] as const;
+
+const AIUEO_INDEX = new Map<string, number>(AIUEO_ORDER.map((char, index) => [char, index]));
+const FIXED_START_OPTIONS = AIUEO_ORDER.filter((char) => BOARD_KEY_SET.has(char));
+
 const SMALL_KANA_MAP: Record<string, string> = {
   ぁ: 'あ',
   ぃ: 'い',
@@ -294,6 +347,7 @@ export default function WordGame() {
     setCurrentPlayer(firstPlayer);
     setLastEndBaseChar(initialStartChar);
     setGameStarted(true);
+    setHideRuleSettings(true);
     setError('');
     setNotice(initialStartChar ? `開始文字: ${initialStartChar}` : '');
   };
@@ -490,25 +544,30 @@ export default function WordGame() {
             <div className="game-start-panel">
               <div className="game-start-actions">
                 {!gameStarted ? (
-                  <button type="button" onClick={startGame}>
+                  <button type="button" className="start-game-button" onClick={startGame}>
                     ゲーム開始
                   </button>
                 ) : null}
                 {gameStarted ? (
-                  <button type="button" onClick={resetGame}>
+                  <button type="button" className="btn-reset" onClick={resetGame}>
                     リセット
                   </button>
                 ) : null}
-                <button type="button" onClick={() => setShowRulesModal(true)}>
+                <button type="button" className="btn-neutral" onClick={() => setShowRulesModal(true)}>
                   ルール詳細
                 </button>
-                <button type="button" onClick={() => setHideRuleSettings((prev) => !prev)}>
+                <button
+                  type="button"
+                  className="btn-neutral"
+                  onClick={() => setHideRuleSettings((prev) => !prev)}
+                >
                   {hideRuleSettings ? 'ルール設定表示' : 'ルール設定非表示'}
                 </button>
                 {gameStarted ? (
                   <>
                     <button
                       type="button"
+                      className="btn-back"
                       onClick={undoLastMove}
                       disabled={history.length === 0 || isReplaying}
                     >
@@ -516,6 +575,7 @@ export default function WordGame() {
                     </button>
                     <button
                       type="button"
+                      className="btn-next"
                       onClick={redoLastMove}
                       disabled={redoHistory.length === 0 || isReplaying}
                     >
@@ -562,7 +622,7 @@ export default function WordGame() {
                       disabled={gameStarted}
                       onChange={(event) => setFixedStartChar(event.target.value)}
                     >
-                      {BOARD_KEYS.map((char) => (
+                      {FIXED_START_OPTIONS.map((char) => (
                         <option key={char} value={char}>
                           {char}
                         </option>
@@ -635,10 +695,19 @@ export default function WordGame() {
                 }}
                 placeholder="単語を入力"
               />
-              <button type="submit" disabled={isFinished || isReplaying}>
+              <button
+                type="submit"
+                className={gameStarted ? 'btn-primary' : 'btn-neutral'}
+                disabled={!gameStarted || isFinished || isReplaying}
+              >
                 提出
               </button>
-              <button type="button" onClick={passTurn} disabled={isFinished || isReplaying}>
+              <button
+                type="button"
+                className={gameStarted ? 'btn-pass' : 'btn-neutral'}
+                onClick={passTurn}
+                disabled={!gameStarted || isFinished || isReplaying}
+              >
                 パス
               </button>
             </form>

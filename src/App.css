@@ -237,11 +237,108 @@
   border-radius: 10px;
   padding: 8px 14px;
   cursor: pointer;
+  color: #374151;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease,
+    color 120ms ease;
 }
 
 .game-setup button:hover,
 .game-form button:hover {
   background: #f3f4f6;
+}
+
+.game-setup .start-game-button {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  color: #78350f;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.22);
+}
+
+.game-setup .start-game-button:hover {
+  background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+}
+
+.game-setup .btn-primary,
+.game-form .btn-primary {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #78350f;
+  font-weight: 700;
+}
+
+.game-setup .btn-primary:hover,
+.game-form .btn-primary:hover {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+}
+
+.game-setup .btn-back,
+.game-form .btn-back {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.game-setup .btn-back:hover,
+.game-form .btn-back:hover {
+  background: #e2e8f0;
+}
+
+.game-setup .btn-next,
+.game-form .btn-next {
+  border-color: #84cc16;
+  background: #ecfccb;
+  color: #3f6212;
+}
+
+.game-setup .btn-next:hover,
+.game-form .btn-next:hover {
+  background: #d9f99d;
+}
+
+.game-setup .btn-pass,
+.game-form .btn-pass {
+  border-color: #e8c040;
+  background: #fffbeb;
+  color: #6b4c00;
+}
+
+.game-setup .btn-pass:hover,
+.game-form .btn-pass:hover {
+  background: #fef3c7;
+}
+
+.game-setup .btn-neutral,
+.game-form .btn-neutral {
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.game-setup .btn-neutral:hover,
+.game-form .btn-neutral:hover {
+  background: #f3f4f6;
+}
+
+.game-setup .btn-reset,
+.game-form .btn-reset {
+  border-color: #d6a6a6;
+  background: #fdf2f2;
+  color: #7a3e3e;
+}
+
+.game-setup .btn-reset:hover,
+.game-form .btn-reset:hover {
+  background: #fbe8e8;
+}
+
+.game-setup button:disabled,
+.game-form button:disabled {
+  border-style: dashed;
+  opacity: 1;
+  cursor: not-allowed;
+  box-shadow: none;
+  filter: saturate(0.35) brightness(0.95);
 }
 
 .score-board {
@@ -334,6 +431,13 @@
   border-radius: 10px;
   padding: 10px 12px;
   font-size: 1rem;
+}
+
+.game-form input:disabled {
+  border-style: dashed;
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
 }
 
 .replay-banner {
