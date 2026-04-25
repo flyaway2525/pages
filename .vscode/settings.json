@@ -13,5 +13,12 @@
         "$env:PATH='${workspaceFolder}\\.tools\\node\\current;' + $env:PATH; function global:npm { & '${workspaceFolder}\\.tools\\node\\current\\npm.cmd' @args }; function global:npx { & '${workspaceFolder}\\.tools\\node\\current\\npx.cmd' @args }"
       ]
     }
+  },
+  "chat.tools.terminal.autoApprove": {
+    "git checkout": true,
+    "git remote": true,
+    "git add": true,
+    "git commit": true,
+    "git push": true
   }
 }
