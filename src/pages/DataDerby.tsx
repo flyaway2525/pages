@@ -1251,6 +1251,27 @@ export default function DataDerby() {
         </div>
       )}
 
+      <div className="game-divider" />
+      <section className="game-memo" aria-label="Inspiration and credit">
+        <h2>Inspiration / Credit</h2>
+        <div className="game-memo-item">
+          <span className="game-memo-label">Idea</span>
+          <span>QuizKnock 動画</span>
+        </div>
+        <div className="game-memo-item">
+          <span className="game-memo-label">Title</span>
+          <span>【実質クイズ】クイズ王はデータで競馬をします【YouTubeで見るアレ】</span>
+        </div>
+        <div className="game-memo-item">
+          <span className="game-memo-label">Source</span>
+          <a href="https://www.youtube.com/watch?v=xXWHDUomulU" target="_blank" rel="noreferrer">https://www.youtube.com/watch?v=xXWHDUomulU</a>
+        </div>
+        <div className="game-memo-item">
+          <span className="game-memo-label">Built with</span>
+          <span>GitHub Copilot</span>
+        </div>
+      </section>
+
       <Link to="/" className="back-link">
         ← ホームへ戻る
       </Link>
