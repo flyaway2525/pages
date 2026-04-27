@@ -25,6 +25,24 @@ React + Vite で構築した GitHub Pages 公開用の静的サイト。
 - ワークフロー: `.github/workflows/deploy.yml`
 - 初回のみ GitHub リポジトリ Settings → Pages → Source を **GitHub Actions** に変更すること
 
+## Branch Strategy
+
+- 基本ブランチは `main` / `develop` / `feature/*` の3種類。
+- `main`: GitHub Pages に公開される本番ブランチ。
+- `develop`: 開発統合ブランチ。通常の作業はここから分岐する。
+- `feature/*`: 機能(ページ)追加ごとに1ブランチ作成する。例: `feature/add-about-page`。
+- 開発フロー:
+	- `develop` から `feature/*` を作成
+	- `feature/*` で実装
+	- `develop` へマージ
+	- リリース時に `develop` から `main` へマージ
+
+## Release Tag Policy
+
+- GitHub Pages は `main` 反映で公開されるため、タグ運用は必須ではない。
+- 当面はタグなし運用(シンプル運用)とする。
+- 必要になったら `main` マージ時に `vX.Y.Z` 形式の軽量タグを付与する。
+
 ## Vite 設定
 
 - `vite.config.ts` の `base: '/pages/'` はリポジトリ名に合わせた設定

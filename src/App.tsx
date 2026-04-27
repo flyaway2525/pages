@@ -6,6 +6,7 @@ import Blog from './pages/Blog';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 import WordGame from './pages/WordGame';
+import DataDerby from './pages/DataDerby';
 import './App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       <Route path="/blog" element={<Blog />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/word-game" element={<WordGame />} />
+      <Route path="/data-derby" element={<DataDerby />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
