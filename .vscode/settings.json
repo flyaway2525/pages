@@ -20,6 +20,10 @@
     "git add": true,
     "git commit": true,
     "git push": true,
-    "Copy-Item": true
+    "Copy-Item": true,
+    "/^git switch develop; git switch -c feature/add-art-crane-game-page$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
   }
 }
