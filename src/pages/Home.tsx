@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import '../styles/pages/home.css';
 
 const links = [
   { to: '/word-game', label: 'Word Game', desc: 'しりとりスプラトゥーン' },

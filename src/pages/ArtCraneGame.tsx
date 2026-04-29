@@ -1,5 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import HomeIconLink from '../components/HomeIconLink';
+import '../styles/pages/art-crane-game.css';
 
 type MoveDirection = 'right' | 'up';
 
@@ -60,7 +62,12 @@ export default function ArtCraneGame() {
   };
 
   return (
-    <main className="page art-crane-page">
+    <main className="page feature-page art-crane-page">
+      <div className="title-with-home">
+        <HomeIconLink />
+        <h1>絵画クレーンゲーム</h1>
+      </div>
+
       <section className="art-crane-stage" aria-label="絵画クレーンゲーム盤面">
         <div className="art-crane-canvas-wrap">
           <div className="art-crane-canvas" role="img" aria-label="黒塗りされた絵画" />

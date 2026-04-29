@@ -1,0 +1,161 @@
+/* 絵画クレーンゲーム */
+.art-crane-page {
+  --feature-bg-start: #f8f5ea;
+  --feature-bg-end: #f2ecdb;
+  --feature-accent-rgb: 217, 166, 83;
+  --feature-accent-strong-rgb: 140, 99, 53;
+  gap: 16px;
+}
+
+.art-crane-stage {
+  border: 2px solid #b9aa7a;
+  border-radius: 4px;
+  padding: 8px;
+  background: linear-gradient(180deg, #f0ead3 0%, #dbd1ae 100%);
+  box-shadow: 0 2px 0 rgba(73, 55, 25, 0.2), 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.art-crane-canvas-wrap {
+  position: relative;
+  min-height: 420px;
+  border: 2px solid #4f4a3b;
+  background: #aeaeae;
+  overflow: hidden;
+}
+
+.art-crane-canvas {
+  position: absolute;
+  inset: 0;
+  margin: 10px 130px 10px 10px;
+  background:
+    radial-gradient(circle at 64% 32%, rgba(33, 17, 14, 0.9), rgba(16, 6, 5, 0.98)),
+    linear-gradient(170deg, #2d1713 0%, #110707 100%);
+  border: 1px solid #2f1815;
+}
+
+.art-crane-dot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: #2f8f43;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 14px rgba(134, 239, 172, 0.95);
+  transition: left 220ms ease, top 220ms ease;
+}
+
+.art-crane-speech {
+  position: absolute;
+  right: 8px;
+  top: 55%;
+  transform: translateY(-50%);
+  background: #fafafa;
+  border: 3px solid #101010;
+  color: #1d65cd;
+  font-size: 2.7rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 16px 34px;
+  clip-path: polygon(12% 0, 68% 0, 100% 23%, 100% 77%, 80% 100%, 12% 100%, 0 82%, 0 18%);
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.7);
+}
+
+.art-crane-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 2px solid #b9aa7a;
+  border-radius: 4px;
+  background: #efefef;
+  padding: 12px 14px;
+}
+
+.art-crane-question-text {
+  margin: 0;
+  color: #111;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.art-crane-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.move-btn {
+  width: 78px;
+  height: 78px;
+  border-radius: 999px;
+  border: 3px solid #454545;
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.move-btn-right {
+  background: linear-gradient(180deg, #ff8ac5 0%, #ea4da0 100%);
+}
+
+.move-btn-up {
+  background: linear-gradient(180deg, #cfcfcf 0%, #aaaaaa 100%);
+}
+
+.move-btn:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+  filter: saturate(0.35);
+}
+
+.art-crane-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.direction-btn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.direction-btn:hover {
+  background: #f3f4f6;
+}
+
+.art-crane-message {
+  margin: 0;
+  color: #334155;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .art-crane-canvas-wrap {
+    min-height: 300px;
+  }
+
+  .art-crane-canvas {
+    margin-right: 8px;
+  }
+
+  .art-crane-speech {
+    display: none;
+  }
+
+  .art-crane-question {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .art-crane-question-text {
+    font-size: 1.5rem;
+  }
+}

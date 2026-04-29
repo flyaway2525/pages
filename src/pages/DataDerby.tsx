@@ -1,5 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
+import HomeIconLink from '../components/HomeIconLink';
+import '../styles/pages/data-derby.css';
 
 interface Item {
   name: string;
@@ -851,8 +853,11 @@ export default function DataDerby() {
   };
 
   return (
-    <main className="page data-derby-page">
-      <h1>データダービー</h1>
+    <main className="page feature-page data-derby-page">
+      <div className="title-with-home">
+        <HomeIconLink />
+        <h1>データダービー</h1>
+      </div>
       <p>バーチャートレースの着順を予想するゲームです。</p>
 
       {!gameState.isRunning && !gameState.finished && !isVotePhase && (
