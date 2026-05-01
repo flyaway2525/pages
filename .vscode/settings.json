@@ -15,15 +15,17 @@
     }
   },
   "chat.tools.terminal.autoApprove": {
-    "git checkout": true,
-    "git remote": true,
-    "git add": true,
-    "git commit": true,
-    "git push": true,
+    "git ": true,
     "Copy-Item": true,
-    "/^git switch develop; git switch -c feature/add-art-crane-game-page$/": {
-      "approve": true,
-      "matchCommandLine": true
-    }
+    "Move-Item": true,
+    "New-Item": true,
+    "Remove-Item": true,
+    "Get-ChildItem": true,
+    "Get-Content": true,
+    "Set-Content": true,
+    "Test-Path": true,
+    "setup.bat": true,
+    "npm ": true,
+    "npx ": true
   }
 }
