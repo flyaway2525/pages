@@ -294,6 +294,20 @@
   font-weight: 700;
 }
 
+.cell.input-enabled {
+  cursor: pointer;
+  transition: transform 100ms ease, box-shadow 120ms ease;
+}
+
+.cell.input-enabled:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.14);
+}
+
+.cell.input-enabled:active {
+  transform: translateY(0);
+}
+
 .cell.none {
   color: #111;
 }
@@ -390,6 +404,20 @@
   font-weight: 700;
 }
 
+.blink-on-show {
+  animation: message-blink 560ms ease-in-out 3;
+}
+
+@keyframes message-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
 .game-logs {
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -448,6 +476,22 @@
   border-radius: 10px;
   padding: 8px 10px;
   line-height: 1.4;
+}
+
+.game-logs li.log-blink {
+  animation: log-blink-highlight 560ms ease-in-out 3;
+}
+
+@keyframes log-blink-highlight {
+  0%,
+  100% {
+    background: #ffffff;
+    border-color: #e5e7eb;
+  }
+  50% {
+    background: #fff7cc;
+    border-color: #facc15;
+  }
 }
 
 .log-row {

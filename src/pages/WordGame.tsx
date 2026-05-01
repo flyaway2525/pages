@@ -204,6 +204,7 @@ export default function WordGame() {
   const [startCharMode, setStartCharMode] = useState<'random' | 'free' | 'fixed'>('fixed');
   const [fixedStartChar, setFixedStartChar] = useState('り');
   const [firstPlayer, setFirstPlayer] = useState<Player>('red');
+  const wordInputRef = useRef<HTMLInputElement | null>(null);
 
   const totalCells = BOARD_KEYS.length;
 
@@ -239,6 +240,7 @@ export default function WordGame() {
 
   const boardForDisplay = replayBoard ?? board;
   const isReplaying = replayTurn !== null;
+  const canInputFromBoard = gameStarted && !isFinished && !isReplaying;
 
   const finishByBoard = (nextBoard: Record<string, CellOwner>) =>
     BOARD_KEYS.every((key) => nextBoard[key] !== null);
@@ -270,6 +272,16 @@ export default function WordGame() {
     setNotice('');
     setShowResultModal(false);
     setGameStarted(false);
+  };
+
+  const handleBoardCharClick = (char: string) => {
+    if (!canInputFromBoard) {
+      return;
+    }
+    setWord((prev) => `${prev}${char}`);
+    setError('');
+    setNotice('');
+    wordInputRef.current?.focus();
   };
 
   const createSnapshot = (): GameSnapshot => ({
@@ -669,7 +681,11 @@ export default function WordGame() {
                 }
                 const owner = boardForDisplay[char];
                 return (
-                  <div key={char} className={`cell ${owner ?? 'none'}`}>
+                  <div
+                    key={char}
+                    className={`cell ${owner ?? 'none'} ${canInputFromBoard ? 'input-enabled' : ''}`}
+                    onClick={() => handleBoardCharClick(char)}
+                  >
                     {char}
                   </div>
                 );
@@ -696,6 +712,7 @@ export default function WordGame() {
 
             <form className="game-form" onSubmit={submitWord}>
               <input
+                ref={wordInputRef}
                 type="text"
                 className={currentPlayer === 'red' ? 'turn-red' : 'turn-blue'}
                 value={word}
@@ -737,9 +754,9 @@ export default function WordGame() {
         <section className="game-logs game-side" ref={logSectionRef}>
         <h2>入力ログ</h2>
         <div className="game-log-messages">
-          {error ? <p className="game-error">{error}</p> : null}
-          {notice ? <p className="game-notice">{notice}</p> : null}
-          {isFinished ? <p className="game-finish">ゲーム終了: {winnerLabel}</p> : null}
+          {error ? <p className="game-error blink-on-show">{error}</p> : null}
+          {notice ? <p className="game-notice blink-on-show">{notice}</p> : null}
+          {isFinished ? <p className="game-finish blink-on-show">ゲーム終了: {winnerLabel}</p> : null}
         </div>
         <div className="log-tabs" role="tablist" aria-label="ログ表示切替">
           <button
@@ -768,8 +785,9 @@ export default function WordGame() {
           <ul>
             {logs.map((entry) => {
               const expanded = expandedLogTurns.includes(entry.turn);
+              const isLatest = logs[0]?.turn === entry.turn;
               return (
-                <li key={entry.turn}>
+                <li key={entry.turn} className={isLatest ? 'log-blink' : ''}>
                   <div className="log-row">
                     <button
                       type="button"
