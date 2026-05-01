@@ -757,7 +757,7 @@ export default function WordGame() {
                         aria-label="末尾変換ツール"
                         title="末尾を小文字・濁点に変換"
                       >
-                        末尾
+                        小"
                       </button>
                     );
                   }
