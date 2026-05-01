@@ -697,6 +697,7 @@ export default function WordGame() {
             <form className="game-form" onSubmit={submitWord}>
               <input
                 type="text"
+                className={currentPlayer === 'red' ? 'turn-red' : 'turn-blue'}
                 value={word}
                 disabled={!gameStarted || isFinished || isReplaying}
                 onChange={(event) => {

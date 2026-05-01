@@ -338,6 +338,16 @@
   font-size: 1rem;
 }
 
+.game-form input.turn-red {
+  background: #fff1f2;
+  border-color: #fecdd3;
+}
+
+.game-form input.turn-blue {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
 .game-form input:disabled {
   border-style: dashed;
   background: #f8fafc;
