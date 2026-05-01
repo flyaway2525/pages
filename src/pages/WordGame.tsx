@@ -148,7 +148,7 @@ const DAKUTEN_TO_BASE: Record<string, string> = {
   ゔ: 'う',
 };
 
-const VARIANT_CYCLES = [
+const VARIANT_CYCLES: ReadonlyArray<ReadonlyArray<string>> = [
   ['あ', 'ぁ'],
   ['い', 'ぃ'],
   ['う', 'ぅ', 'ゔ'],
@@ -178,7 +178,7 @@ const VARIANT_CYCLES = [
   ['ふ', 'ぶ', 'ぷ'],
   ['へ', 'べ', 'ぺ'],
   ['ほ', 'ぼ', 'ぽ'],
-] as const;
+];
 
 const toKatakanaChar = (char: string): string =>
   char.replace(/[ぁ-ん]/g, (value) => String.fromCharCode(value.charCodeAt(0) + 0x60));
