@@ -387,7 +387,12 @@ export default function WordGame() {
     }
 
     const startChar = kanaChars[0];
-    const endChar = kanaChars[kanaChars.length - 1];
+    // 「ー」終わりの場合、直前の実文字を語尾として使う（しりとりルール）
+    let endIdx = kanaChars.length - 1;
+    while (endIdx > 0 && kanaChars[endIdx] === 'ー') {
+      endIdx--;
+    }
+    const endChar = kanaChars[endIdx];
     const startBase = normalizeForBoard(startChar);
     const endBase = normalizeForBoard(endChar);
 
