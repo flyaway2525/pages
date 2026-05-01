@@ -148,6 +148,53 @@ const DAKUTEN_TO_BASE: Record<string, string> = {
   ゔ: 'う',
 };
 
+const VARIANT_CYCLES = [
+  ['あ', 'ぁ'],
+  ['い', 'ぃ'],
+  ['う', 'ぅ', 'ゔ'],
+  ['え', 'ぇ'],
+  ['お', 'ぉ'],
+  ['や', 'ゃ'],
+  ['ゆ', 'ゅ'],
+  ['よ', 'ょ'],
+  ['わ', 'ゎ'],
+  ['か', 'が'],
+  ['き', 'ぎ'],
+  ['く', 'ぐ'],
+  ['け', 'げ'],
+  ['こ', 'ご'],
+  ['さ', 'ざ'],
+  ['し', 'じ'],
+  ['す', 'ず'],
+  ['せ', 'ぜ'],
+  ['そ', 'ぞ'],
+  ['た', 'だ'],
+  ['ち', 'ぢ'],
+  ['つ', 'っ', 'づ'],
+  ['て', 'で'],
+  ['と', 'ど'],
+  ['は', 'ば', 'ぱ'],
+  ['ひ', 'び', 'ぴ'],
+  ['ふ', 'ぶ', 'ぷ'],
+  ['へ', 'べ', 'ぺ'],
+  ['ほ', 'ぼ', 'ぽ'],
+] as const;
+
+const toKatakanaChar = (char: string): string =>
+  char.replace(/[ぁ-ん]/g, (value) => String.fromCharCode(value.charCodeAt(0) + 0x60));
+
+const cycleKanaVariant = (char: string): string | null => {
+  const hira = toHiragana(char);
+  const cycle = VARIANT_CYCLES.find((candidates) => candidates.includes(hira));
+  if (!cycle) {
+    return null;
+  }
+  const currentIndex = cycle.indexOf(hira);
+  const next = cycle[(currentIndex + 1) % cycle.length];
+  const isKatakana = /[ァ-ン]/.test(char);
+  return isKatakana ? toKatakanaChar(next) : next;
+};
+
 const createInitialBoard = (): Record<string, CellOwner> => {
   const initial: Record<string, CellOwner> = {};
   for (const key of BOARD_KEYS) {
@@ -282,6 +329,28 @@ export default function WordGame() {
     setError('');
     setNotice('');
     wordInputRef.current?.focus();
+  };
+
+  const handleTransformLastChar = () => {
+    if (!canInputFromBoard) {
+      return;
+    }
+
+    const chars = Array.from(word);
+    for (let index = chars.length - 1; index >= 0; index -= 1) {
+      const nextChar = cycleKanaVariant(chars[index]);
+      if (nextChar) {
+        chars[index] = nextChar;
+        setWord(chars.join(''));
+        setError('');
+        setNotice('末尾の文字を変換しました。');
+        wordInputRef.current?.focus();
+        return;
+      }
+    }
+
+    setError('変換できるかな文字が末尾にありません。');
+    setNotice('');
   };
 
   const createSnapshot = (): GameSnapshot => ({
@@ -677,6 +746,21 @@ export default function WordGame() {
             {BOARD_ROWS.map((row, rowIndex) =>
               row.map((char, colIndex) => {
                 if (!char) {
+                  if (rowIndex === 4 && colIndex === 0) {
+                    return (
+                      <button
+                        key="transform-tool"
+                        type="button"
+                        className="cell tool-cell"
+                        onClick={handleTransformLastChar}
+                        disabled={!canInputFromBoard}
+                        aria-label="末尾変換ツール"
+                        title="末尾を小文字・濁点に変換"
+                      >
+                        末尾
+                      </button>
+                    );
+                  }
                   return <div key={`empty-${rowIndex}-${colIndex}`} className="cell empty" />;
                 }
                 const owner = boardForDisplay[char];
