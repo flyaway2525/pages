@@ -7,6 +7,7 @@ import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 import WordGame from './pages/WordGame';
 import DataDerby from './pages/DataDerby';
+import ArtCraneGame from './pages/ArtCraneGame';
 import './App.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/word-game" element={<WordGame />} />
       <Route path="/data-derby" element={<DataDerby />} />
+      <Route path="/art-crane-game" element={<ArtCraneGame />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import HomeIconLink from '../components/HomeIconLink';
+import '../styles/pages/word-game.css';
 
 const EASTER_EGGS: { word: string; message: string }[] = [
   { word: '伊沢拓司', message: '東大王！' },
@@ -530,9 +532,12 @@ export default function WordGame() {
   };
 
   return (
-    <main className="page game-page">
+    <main className="page feature-page game-page">
       <div className="game-heading">
-        <h1>しりとりスプラトゥーン</h1>
+        <div className="title-with-home">
+          <HomeIconLink />
+          <h1>しりとりスプラトゥーン</h1>
+        </div>
         <p className="game-lead">
           50音表上で陣取りゲーム！しりとりをしながらより多くの文字を塗りつぶせ！
         </p>
