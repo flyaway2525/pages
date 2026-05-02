@@ -648,6 +648,53 @@
   font-weight: 700;
 }
 
+.game-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(79, 74, 59, 0.25);
+  margin-top: 8px;
+  margin-bottom: 6px;
+}
+
+.game-memo {
+  border: 2px solid #c6b98b;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f3eedc 0%, #e9dfbe 100%);
+  padding: 12px;
+  color: #4f4a3b;
+  font-size: 0.9rem;
+  display: grid;
+  gap: 8px;
+}
+
+.game-memo h2 {
+  margin: 0;
+  color: #3f3a2e;
+  font-size: 0.95rem;
+}
+
+.game-memo-item {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.game-memo-label {
+  color: #8b6535;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.game-memo a {
+  color: #5b4424;
+  word-break: break-all;
+}
+
+.game-memo a:hover {
+  color: #3f2f18;
+}
+
 /* ======================== Responsive ======================== */
 
 @media (max-width: 600px) {

@@ -749,6 +749,30 @@ export default function ArtCraneGame() {
         </>
       )}
 
+      <div className="game-divider" aria-hidden="true" />
+
+      <section className="game-memo" aria-label="インスピレーションとクレジット">
+        <h2>Inspiration / Credit</h2>
+        <p className="game-memo-item">
+          <span className="game-memo-label">Idea</span>
+          <span>QuizKnock 動画</span>
+        </p>
+        <p className="game-memo-item">
+          <span className="game-memo-label">Title</span>
+          <span>【絵画×クレーンゲーム】タイミングよくボタンを押して、絵画を完成させよう！</span>
+        </p>
+        <p className="game-memo-item">
+          <span className="game-memo-label">Source</span>
+          <a href="https://www.youtube.com/watch?v=Mx_U0syjdxc" target="_blank" rel="noreferrer">
+            https://www.youtube.com/watch?v=Mx_U0syjdxc
+          </a>
+        </p>
+        <p className="game-memo-item">
+          <span className="game-memo-label">Built with</span>
+          <span>GitHub Copilot</span>
+        </p>
+      </section>
+
       <Link to="/" className="back-link">
         ← ホームに戻る
       </Link>
