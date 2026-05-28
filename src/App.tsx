@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
 import Works from './pages/Works';
@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound';
 import WordGame from './pages/WordGame';
 import DataDerby from './pages/DataDerby';
 import ArtCraneGame from './pages/ArtCraneGame';
+import QuantumGomoku from './pages/QuantumGomoku';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
       <Route path="/word-game" element={<WordGame />} />
       <Route path="/data-derby" element={<DataDerby />} />
       <Route path="/art-crane-game" element={<ArtCraneGame />} />
+      <Route path="/quantum-gomoku" element={<QuantumGomoku />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
