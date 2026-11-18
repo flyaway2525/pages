@@ -10,6 +10,7 @@ import DataDerby from './pages/DataDerby';
 import ArtCraneGame from './pages/ArtCraneGame';
 import QuantumGomoku from './pages/QuantumGomoku';
 import EchoDodge from './pages/EchoDodge';
+import ToroGame from './pages/ToroGame';
 import './App.css';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       <Route path="/art-crane-game" element={<ArtCraneGame />} />
       <Route path="/quantum-gomoku" element={<QuantumGomoku />} />
       <Route path="/echo-dodge" element={<EchoDodge />} />
+      <Route path="/toro" element={<ToroGame />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
