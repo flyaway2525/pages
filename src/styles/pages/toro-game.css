@@ -1,0 +1,300 @@
+main.toro-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: linear-gradient(180deg, #fff6ee 0%, #ffe9dc 100%);
+  color: #4a2a1d;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.toro-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toro-header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.toro-count {
+  margin-left: auto;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #ffffffb0;
+}
+
+/* 絵の表示エリア */
+.toro-scene {
+  flex: 1 1 auto;
+  min-height: 260px;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(120, 60, 30, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 8px;
+  overflow: hidden;
+}
+
+.toro-scene-empty {
+  color: #b08a78;
+  font-size: 1.05rem;
+}
+
+.toro-scene-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  --art: 120px;
+}
+
+.toro-scene-row.is-many {
+  --art: 72px;
+}
+
+.toro-scene-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toro-card {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: toro-pop 0.22s ease-out;
+}
+
+.toro-card-art {
+  position: relative;
+  width: var(--art);
+  height: var(--art);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toro-card-emoji {
+  font-size: calc(var(--art) * 0.78);
+  line-height: 1;
+  display: inline-block;
+  transform-origin: 50% 100%;
+}
+
+.toro-card-art img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 100%;
+}
+
+.toro-card figcaption {
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: center;
+  max-width: calc(var(--art) + 40px);
+}
+
+.toro-joiner {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #d0603a;
+  padding-bottom: 26px;
+}
+
+.toro-joiner.is-loose {
+  color: #c9b0a4;
+}
+
+/* とろとろ: 溶けて垂れる */
+.melt-1 :is(.toro-card-emoji, img) {
+  transform: scale(1.12, 0.78) skewX(-6deg);
+  filter: blur(0.6px) saturate(1.2);
+  animation: toro-wobble 1.6s ease-in-out infinite;
+}
+
+.melt-2 :is(.toro-card-emoji, img) {
+  transform: scale(1.3, 0.55) skewX(-10deg);
+  filter: blur(1.2px) saturate(1.4);
+  animation: toro-wobble 1.2s ease-in-out infinite;
+}
+
+.melt-3 :is(.toro-card-emoji, img) {
+  transform: scale(1.5, 0.32) skewX(-14deg);
+  filter: blur(2px) saturate(1.6);
+  animation: toro-wobble 0.9s ease-in-out infinite;
+}
+
+.toro-drip {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: 2%;
+  height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 170, 120, 0.55) 0%, rgba(255, 170, 120, 0) 70%);
+  animation: toro-drip 1.4s ease-in-out infinite;
+}
+
+/* 入力した文字 */
+.toro-typed {
+  text-align: center;
+}
+
+.toro-typed-text {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  min-height: 2.6rem;
+  line-height: 1.2;
+  word-break: break-all;
+  transition: color 0.2s;
+}
+
+.toro-typed.is-closed .toro-typed-text {
+  color: #b9998a;
+}
+
+.toro-timer {
+  height: 4px;
+  margin: 6px auto 0;
+  width: 60%;
+  border-radius: 2px;
+  background: #f1d7ca;
+  overflow: hidden;
+}
+
+.toro-timer-bar {
+  display: block;
+  height: 100%;
+  background: #e0704a;
+  animation: toro-timer 1s linear forwards;
+}
+
+/* ボタン */
+.toro-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.toro-button {
+  aspect-ratio: 1;
+  max-height: 34dvh;
+  justify-self: center;
+  width: 100%;
+  border: none;
+  border-radius: 50%;
+  font-size: clamp(3rem, 18vw, 5.5rem);
+  font-weight: 800;
+  color: #ffffff;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+
+.toro-button-to {
+  background: radial-gradient(circle at 35% 30%, #ff9d7a 0%, #e8543a 70%);
+  box-shadow: 0 8px 0 #a8341f, 0 12px 20px rgba(168, 52, 31, 0.35);
+}
+
+.toro-button-ro {
+  background: radial-gradient(circle at 35% 30%, #ffc56e 0%, #e89a2a 70%);
+  box-shadow: 0 8px 0 #a86812, 0 12px 20px rgba(168, 104, 18, 0.35);
+}
+
+.toro-button.is-pressed {
+  transform: translateY(6px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 図鑑・履歴 */
+.toro-extra summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.toro-collection {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.toro-collection li {
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+
+.toro-collection li.is-unknown {
+  color: #b9998a;
+}
+
+.toro-history {
+  margin-top: 10px;
+  padding-left: 1.4em;
+  font-size: 0.9rem;
+  color: #6d4a3a;
+}
+
+@keyframes toro-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes toro-timer {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes toro-wobble {
+  50% {
+    translate: 0 3px;
+    rotate: 2deg;
+  }
+}
+
+@keyframes toro-drip {
+  50% {
+    transform: scaleX(1.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toro-card,
+  .toro-card-emoji,
+  .toro-card-art img,
+  .toro-drip {
+    animation: none !important;
+  }
+}
