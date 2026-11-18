@@ -10,8 +10,10 @@ export type WordVariant = {
   image?: string;
   /** 同じ読みの中での出やすさ（省略時 1） */
   weight?: number;
-  /** public/ 以下の音声パス。この単語ができた瞬間に再生する */
+  /** public/ 以下の音声パス。この単語ができた瞬間と、リザルトの全文再生で使う */
   sound?: string;
+  /** リザルトでのこの画像の点数 */
+  points: number;
 };
 
 type WordEntry = { reading: string; variants: WordVariant[] };
@@ -22,36 +24,44 @@ export const DICTIONARY: WordEntry[] = [
   {
     reading: 'と',
     variants: [
-      { id: 'door', label: '戸', emoji: '🚪', sound: `${S}to1.wav` },
-      { id: 'capital', label: '都', emoji: '🏯', sound: `${S}to2.wav` },
-      { id: 'rabbit', label: '兎', emoji: '🐇', sound: `${S}to3.wav` },
+      { id: 'door', label: '戸', emoji: '🚪', sound: `${S}to1.wav`, points: 10 },
+      { id: 'capital', label: '都', emoji: '🏯', sound: `${S}to2.wav`, points: 20 },
+      { id: 'rabbit', label: '兎', emoji: '🐇', sound: `${S}to3.wav`, points: 20 },
     ],
   },
   {
     reading: 'ろ',
     variants: [
-      { id: 'furnace', label: '炉', emoji: '🔥', sound: `${S}ro.wav` },
-      { id: 'road', label: '路', emoji: '🛤️', sound: `${S}ro.wav` },
+      { id: 'furnace', label: '炉', emoji: '🔥', sound: `${S}ro.wav`, points: 10 },
+      { id: 'road', label: '路', emoji: '🛤️', sound: `${S}ro.wav`, points: 10 },
     ],
   },
-  { reading: 'とと', variants: [{ id: 'fish', label: 'とと（おさかな）', emoji: '🐟', sound: `${S}toto.wav` }] },
-  { reading: 'ととと', variants: [{ id: 'stumble', label: 'とととっ（よろける）', emoji: '💫', sound: `${S}tototo.wav` }] },
+  { reading: 'とと', variants: [{ id: 'fish', label: 'とと（おさかな）', emoji: '🐟', sound: `${S}toto.wav`, points: 30 }] },
+  { reading: 'ととと', variants: [{ id: 'stumble', label: 'とととっ（よろける）', emoji: '💫', sound: `${S}tototo.wav`, points: 50 }] },
   { reading: 'とろ', variants: [
-    { id: 'toro', label: 'トロ', emoji: '🍣', weight: 3, sound: `${S}toro.wav` },
-    { id: 'pool', label: '瀞（川の淵）', emoji: '🏞️', sound: `${S}toro.wav` },
+    { id: 'toro', label: 'トロ', emoji: '🍣', weight: 3, sound: `${S}toro.wav`, points: 40 },
+    { id: 'pool', label: '瀞（川の淵）', emoji: '🏞️', sound: `${S}toro.wav`, points: 80 },
   ] },
   // 後ろに単語が続くときは「とろとろX」（修飾）として解釈される
   { reading: 'とろとろ', variants: [
-    { id: 'sleepy', label: 'とろとろ（ねむい）', emoji: '😪', sound: `${S}torotoro.wav` },
-    { id: 'stew', label: 'とろとろ（煮込み）', emoji: '🍲', sound: `${S}torotoro.wav` },
+    { id: 'sleepy', label: 'とろとろ（ねむい）', emoji: '😪', sound: `${S}torotoro.wav`, points: 60 },
+    { id: 'stew', label: 'とろとろ（煮込み）', emoji: '🍲', sound: `${S}torotoro.wav`, points: 60 },
   ] },
   { reading: 'ろと', variants: [
-    { id: 'loto-sword', label: 'ロトの剣', emoji: '⚔️', sound: `${S}roto1.wav` },
-    { id: 'loto6', label: 'ロト6', emoji: '🎱', sound: `${S}roto2.wav` },
+    { id: 'loto-sword', label: 'ロトの剣', emoji: '⚔️', sound: `${S}roto1.wav`, points: 70 },
+    { id: 'loto6', label: 'ロト6', emoji: '🎱', sound: `${S}roto2.wav`, points: 70 },
   ] },
-  { reading: 'とろろ', variants: [{ id: 'tororo', label: 'とろろ', emoji: '🥣', sound: `${S}tororo.wav` }] },
-  { reading: 'ととろ', variants: [{ id: 'totoro', label: 'ととろ', emoji: '🌳', sound: `${S}totoro.wav` }] },
+  { reading: 'とろろ', variants: [{ id: 'tororo', label: 'とろろ', emoji: '🥣', sound: `${S}tororo.wav`, points: 60 }] },
+  { reading: 'ととろ', variants: [{ id: 'totoro', label: 'ととろ', emoji: '🌳', sound: `${S}totoro.wav`, points: 100 }] },
 ];
+
+/** 「とろとろ」で溶かすごとに加わる点数 */
+export const MELT_POINTS = 50;
+/** 「と」でつないだ部分の音声（全文再生用） */
+const JOINER_SOUND = `${S}to1.wav`;
+const MELT_SOUND = `${S}torotoro.wav`;
+
+export const phrasePoints = (p: { word: WordVariant; melt: number }) => p.word.points + p.melt * MELT_POINTS;
 
 /** 辞書に登録されている音声ファイル（重複なし） */
 export const ALL_SOUNDS = [...new Set(DICTIONARY.flatMap((w) => w.variants.flatMap((v) => (v.sound ? [v.sound] : []))))];
@@ -160,4 +170,21 @@ export const discoveredIds = (s: Sentence) => {
   if (s.phrases.some((p) => p.melt > 0)) ids.push('melt');
   if (s.joiners.includes('と')) ids.push('and');
   return ids;
+};
+
+/** 文の合計点（各画像の点数の合計） */
+export const sentenceScore = (s: Sentence) => s.phrases.reduce((sum, p) => sum + phrasePoints(p), 0);
+
+/**
+ * 全文をつなげて読み上げるための音声の並び。
+ * phraseIndex はその音がどの画像に対応するか（「と」の接続は -1）。
+ */
+export const sentenceSoundSequence = (s: Sentence) => {
+  const seq: { sound?: string; phraseIndex: number }[] = [];
+  s.phrases.forEach((p, i) => {
+    for (let m = 0; m < p.melt; m += 1) seq.push({ sound: MELT_SOUND, phraseIndex: i });
+    seq.push({ sound: p.word.sound, phraseIndex: i });
+    if (s.joiners[i] === 'と') seq.push({ sound: JOINER_SOUND, phraseIndex: -1 });
+  });
+  return seq;
 };
