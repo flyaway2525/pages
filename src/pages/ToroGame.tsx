@@ -1,12 +1,24 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import HomeIconLink from '../components/HomeIconLink';
+import ToroResult, { type ToroResultData } from '../components/ToroResult';
 import ToroScene from '../components/ToroScene';
+import ToroTyped from '../components/ToroTyped';
 import { useToroInput } from '../hooks/useToroInput';
 import { useToroSound } from '../hooks/useToroSound';
-import { COLLECTION, discoveredIds, parseSentence, sentenceLabel, type Kana } from '../lib/toroParser';
+import {
+  COLLECTION,
+  discoveredIds,
+  parseSentence,
+  sentenceLabel,
+  sentenceScore,
+  sentenceSoundSequence,
+  type Kana,
+  type Sentence,
+} from '../lib/toroParser';
 import '../styles/pages/toro-game.css';
 
 const STORAGE_KEY = 'toro-discovered';
+const BEST_KEY = 'toro-best';
 const HISTORY_SIZE = 5;
 
 const loadDiscovered = (): Set<string> => {
@@ -17,18 +29,76 @@ const loadDiscovered = (): Set<string> => {
   }
 };
 
+const loadBest = () => {
+  try {
+    return Number(localStorage.getItem(BEST_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+};
+
+const save = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    /* 保存できなくても遊べる */
+  }
+};
+
 export default function ToroGame() {
-  const playSound = useToroSound();
+  const { play, playSequence, stop } = useToroSound();
   const [history, setHistory] = useState<string[]>([]);
   const [discovered, setDiscovered] = useState<Set<string>>(loadDiscovered);
   const [pressed, setPressed] = useState<Kana | null>(null);
+  const [result, setResult] = useState<ToroResultData | null>(null);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [playing, setPlaying] = useState(false);
   const activePointer = useRef<number | null>(null);
+  const bestRef = useRef(loadBest());
+  const timersRef = useRef<number[]>([]);
+  const resultOpenRef = useRef(false);
+  resultOpenRef.current = result !== null;
 
-  const onClose = useCallback((text: string, id: number) => {
-    const s = parseSentence(text, id);
-    if (s) setHistory((h) => [sentenceLabel(s), ...h].slice(0, HISTORY_SIZE));
+  const clearTimers = useCallback(() => {
+    timersRef.current.forEach((t) => window.clearTimeout(t));
+    timersRef.current = [];
   }, []);
-  const { state, press } = useToroInput(onClose);
+
+  // 全文をつなげて読み上げ、読んでいる画像をハイライトする
+  const readAloud = useCallback(
+    (s: Sentence) => {
+      clearTimers();
+      const timings = playSequence(sentenceSoundSequence(s));
+      setPlaying(true);
+      const later = (ms: number, fn: () => void) => timersRef.current.push(window.setTimeout(fn, ms));
+      timings.forEach((t) => later(t.startMs, () => setActiveIndex(t.phraseIndex)));
+      const endMs = timings.length ? timings[timings.length - 1].endMs : 0;
+      later(endMs + 100, () => {
+        setActiveIndex(-1);
+        setPlaying(false);
+      });
+    },
+    [clearTimers, playSequence],
+  );
+
+  // 1 秒入力がなかったらリザルトへ
+  const onClose = useCallback(
+    (text: string, id: number) => {
+      const s = parseSentence(text, id);
+      if (!s) return;
+      const score = sentenceScore(s);
+      const isNewBest = score > bestRef.current;
+      if (isNewBest) {
+        bestRef.current = score;
+        save(BEST_KEY, String(score));
+      }
+      setHistory((h) => [`${sentenceLabel(s)}（${score}pt）`, ...h].slice(0, HISTORY_SIZE));
+      setResult({ text, sentence: s, score, best: bestRef.current, isNewBest });
+      readAloud(s);
+    },
+    [readAloud],
+  );
+  const { state, press, reset } = useToroInput(onClose);
 
   const sentence = useMemo(() => parseSentence(state.text, state.sentenceId), [state.text, state.sentenceId]);
 
@@ -38,34 +108,46 @@ export default function ToroGame() {
     if (ids.length === 0) return;
     const next = new Set([...discovered, ...ids]);
     setDiscovered(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
-    } catch {
-      /* 保存できなくても遊べる */
-    }
+    save(STORAGE_KEY, JSON.stringify([...next]));
   }, [sentence, discovered]);
+
+  useEffect(() => clearTimers, [clearTimers]);
+
+  const retry = useCallback(() => {
+    stop();
+    clearTimers();
+    setActiveIndex(-1);
+    setPlaying(false);
+    setResult(null);
+    reset();
+  }, [clearTimers, reset, stop]);
 
   const hit = useCallback(
     (kana: Kana) => {
+      if (resultOpenRef.current) return; // リザルト表示中は入力しない
       // 押した結果できた文の、最後の単語の声を鳴らす（と → 戸、続けて ろ → トロ）
       const next = press(kana);
       const parsed = parseSentence(next.text, next.sentenceId);
-      playSound(parsed?.phrases.at(-1)?.word.sound, kana);
+      play(parsed?.phrases.at(-1)?.word.sound, kana);
     },
-    [playSound, press],
+    [play, press],
   );
 
-  // PC 用: T キー = と、R キー = ろ
+  // PC 用: T キー = と、R キー = ろ、リザルトでは Enter / Space でもう一回
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
       const k = e.key.toLowerCase();
       if (k === 't') hit('と');
       if (k === 'r') hit('ろ');
+      if ((k === 'enter' || k === ' ') && resultOpenRef.current) {
+        e.preventDefault();
+        retry();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [hit]);
+  }, [hit, retry]);
 
   const buttonProps = (kana: Kana) => ({
     onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
@@ -105,8 +187,8 @@ export default function ToroGame() {
         <ToroScene key={state.sentenceId} sentence={sentence} />
       </section>
 
-      <section className={`toro-typed${state.closed ? ' is-closed' : ''}`}>
-        <p className="toro-typed-text">{state.text || '　'}</p>
+      <section className="toro-typed">
+        <ToroTyped text={state.text} closed={state.closed} />
         <div className="toro-timer">
           {!state.closed && <span key={state.pressCount} className="toro-timer-bar" />}
         </div>
@@ -148,6 +230,16 @@ export default function ToroGame() {
           </ol>
         )}
       </details>
+
+      {result && (
+        <ToroResult
+          result={result}
+          activeIndex={activeIndex}
+          playing={playing}
+          onReplay={() => readAloud(result.sentence)}
+          onRetry={retry}
+        />
+      )}
     </main>
   );
 }

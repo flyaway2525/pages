@@ -156,17 +156,39 @@ main.toro-page {
   text-align: center;
 }
 
-.toro-typed-text {
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  min-height: 2.6rem;
-  line-height: 1.2;
-  word-break: break-all;
-  transition: color 0.2s;
+/* 新しい文字は右手前、古い文字ほど左奥へ流れていく */
+.toro-typed-stage {
+  height: 3.4rem;
+  perspective: 360px;
+  perspective-origin: 70% 50%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
 }
 
-.toro-typed.is-closed .toro-typed-text {
+.toro-typed-track {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 22%;
+  transform: rotateY(32deg);
+  transform-origin: 78% 50%;
+}
+
+.toro-typed-char {
+  flex: 0 0 auto;
+  font-weight: 800;
+  line-height: 1;
+  margin-left: -0.04em;
+  transition: font-size 0.18s ease-out, opacity 0.18s ease-out, color 0.2s;
+}
+
+.toro-typed-char.is-new {
+  animation: toro-char-in 0.16s ease-out;
+}
+
+.toro-typed-stage.is-closed .toro-typed-char {
   color: #b9998a;
 }
 
@@ -296,5 +318,188 @@ main.toro-page {
   .toro-card-art img,
   .toro-drip {
     animation: none !important;
+  }
+}
+
+@keyframes toro-char-in {
+  from {
+    translate: 0.8em 0;
+    opacity: 0;
+  }
+}
+
+/* リザルト */
+.toro-result {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(60, 25, 10, 0.45);
+  animation: toro-fade 0.2s ease-out;
+}
+
+.toro-result-card {
+  width: min(100%, 440px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  border-radius: 24px;
+  padding: 20px 18px 18px;
+  background: linear-gradient(180deg, #fffaf5 0%, #ffeede 100%);
+  box-shadow: 0 16px 40px rgba(60, 25, 10, 0.35);
+  text-align: center;
+  animation: toro-pop 0.25s ease-out;
+}
+
+.toro-result-heading {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  color: #d0603a;
+}
+
+.toro-result-text {
+  font-size: 1.6rem;
+  font-weight: 800;
+  word-break: break-all;
+  margin: 4px 0 12px;
+}
+
+.toro-result-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.toro-result-list li {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 14px;
+  background: #ffffff;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.toro-result-list li.is-active {
+  transform: scale(1.04);
+  background: #fff1c9;
+  box-shadow: 0 0 0 2px #f2b440;
+}
+
+.toro-result-emoji {
+  font-size: 2.1rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.toro-result-emoji img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.toro-result-emoji.melt-1 {
+  transform: scale(1.1, 0.78);
+}
+
+.toro-result-emoji.melt-2 {
+  transform: scale(1.2, 0.6);
+}
+
+.toro-result-emoji.melt-3 {
+  transform: scale(1.3, 0.45);
+}
+
+.toro-result-label {
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.toro-result-label small {
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #9a7362;
+}
+
+.toro-result-points {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #d0603a;
+}
+
+.toro-result-points::after {
+  content: 'pt';
+  font-size: 0.7em;
+  margin-left: 2px;
+}
+
+.toro-result-total {
+  margin-top: 14px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.toro-result-total strong {
+  font-size: 3rem;
+  line-height: 1;
+  color: #c4421f;
+  font-variant-numeric: tabular-nums;
+}
+
+.toro-result-best {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #8a5a44;
+}
+
+.toro-result-actions {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.toro-result-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.toro-result-replay {
+  background: #ffffff;
+  color: #c4421f;
+  box-shadow: inset 0 0 0 2px #e8a58c;
+}
+
+.toro-result-replay:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.toro-result-retry {
+  background: linear-gradient(180deg, #ff8a63 0%, #e8543a 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 0 #a8341f;
+}
+
+@keyframes toro-fade {
+  from {
+    opacity: 0;
   }
 }
