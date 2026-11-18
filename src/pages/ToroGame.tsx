@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import HomeIconLink from '../components/HomeIconLink';
-import ToroResult, { type ToroResultData } from '../components/ToroResult';
+import ToroResult, { SPEEDS, type ToroResultData } from '../components/ToroResult';
 import ToroScene from '../components/ToroScene';
 import ToroTyped from '../components/ToroTyped';
-import { useToroInput } from '../hooks/useToroInput';
-import { useToroSound } from '../hooks/useToroSound';
+import { MAX_LENGTH, useToroInput } from '../hooks/useToroInput';
+import { useToroSound, type SequenceController } from '../hooks/useToroSound';
 import {
   COLLECTION,
   discoveredIds,
@@ -53,33 +53,58 @@ export default function ToroGame() {
   const [result, setResult] = useState<ToroResultData | null>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
+  const [progress, setProgress] = useState({ step: 0, total: 0 });
+  const speedRef = useRef(1);
+  const playerRef = useRef<SequenceController | null>(null);
   const activePointer = useRef<number | null>(null);
   const bestRef = useRef(loadBest());
-  const timersRef = useRef<number[]>([]);
   const resultOpenRef = useRef(false);
   resultOpenRef.current = result !== null;
 
-  const clearTimers = useCallback(() => {
-    timersRef.current.forEach((t) => window.clearTimeout(t));
-    timersRef.current = [];
+  const stopReading = useCallback(() => {
+    playerRef.current?.cancel();
+    playerRef.current = null;
   }, []);
 
   // 全文をつなげて読み上げ、読んでいる画像をハイライトする
   const readAloud = useCallback(
     (s: Sentence) => {
-      clearTimers();
-      const timings = playSequence(sentenceSoundSequence(s));
+      stopReading();
+      const items = sentenceSoundSequence(s);
       setPlaying(true);
-      const later = (ms: number, fn: () => void) => timersRef.current.push(window.setTimeout(fn, ms));
-      timings.forEach((t) => later(t.startMs, () => setActiveIndex(t.phraseIndex)));
-      const endMs = timings.length ? timings[timings.length - 1].endMs : 0;
-      later(endMs + 100, () => {
-        setActiveIndex(-1);
-        setPlaying(false);
+      setProgress({ step: 0, total: items.length });
+      const player = playSequence(items, {
+        onStep: (phraseIndex, step) => {
+          setActiveIndex(phraseIndex);
+          setProgress({ step: step + 1, total: items.length });
+        },
+        onEnd: () => {
+          setActiveIndex(-1);
+          setPlaying(false);
+          playerRef.current = null;
+        },
       });
+      player.setRate(speedRef.current);
+      playerRef.current = player;
     },
-    [clearTimers, playSequence],
+    [playSequence, stopReading],
   );
+
+  const changeSpeed = useCallback(() => {
+    const next = SPEEDS[(SPEEDS.indexOf(speedRef.current) + 1) % SPEEDS.length];
+    speedRef.current = next;
+    setSpeed(next);
+    playerRef.current?.setRate(next);
+  }, []);
+
+  /** 読み上げを最後まで飛ばす */
+  const skipReading = useCallback(() => {
+    stopReading();
+    setActiveIndex(-1);
+    setPlaying(false);
+    setProgress((p) => ({ ...p, step: p.total }));
+  }, [stopReading]);
 
   // 1 秒入力がなかったらリザルトへ
   const onClose = useCallback(
@@ -111,16 +136,16 @@ export default function ToroGame() {
     save(STORAGE_KEY, JSON.stringify([...next]));
   }, [sentence, discovered]);
 
-  useEffect(() => clearTimers, [clearTimers]);
+  useEffect(() => stopReading, [stopReading]);
 
   const retry = useCallback(() => {
+    stopReading();
     stop();
-    clearTimers();
     setActiveIndex(-1);
     setPlaying(false);
     setResult(null);
     reset();
-  }, [clearTimers, reset, stop]);
+  }, [reset, stop, stopReading]);
 
   const hit = useCallback(
     (kana: Kana) => {
@@ -189,6 +214,10 @@ export default function ToroGame() {
 
       <section className="toro-typed">
         <ToroTyped text={state.text} closed={state.closed} />
+        <p className="toro-char-count" aria-live="off">
+          <strong>{state.text.length.toLocaleString()}</strong> 文字
+          {state.text.length >= MAX_LENGTH && <span>（上限）</span>}
+        </p>
         <div className="toro-timer">
           {!state.closed && <span key={state.pressCount} className="toro-timer-bar" />}
         </div>
@@ -236,6 +265,10 @@ export default function ToroGame() {
           result={result}
           activeIndex={activeIndex}
           playing={playing}
+          speed={speed}
+          progress={progress}
+          onSpeed={changeSpeed}
+          onSkip={skipReading}
           onReplay={() => readAloud(result.sentence)}
           onRetry={retry}
         />
