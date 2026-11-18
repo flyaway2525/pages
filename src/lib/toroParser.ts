@@ -8,6 +8,8 @@ export type WordVariant = {
   emoji: string;
   /** public/ 以下の画像パス。指定すると絵文字の代わりに表示する */
   image?: string;
+  /** 同じ読みの中での出やすさ（省略時 1） */
+  weight?: number;
 };
 
 type WordEntry = { reading: string; variants: WordVariant[] };
@@ -29,7 +31,16 @@ export const DICTIONARY: WordEntry[] = [
     ],
   },
   { reading: 'とと', variants: [{ id: 'fish', label: 'とと（おさかな）', emoji: '🐟' }] },
-  { reading: 'とろ', variants: [{ id: 'toro', label: 'トロ', emoji: '🍣' }] },
+  { reading: 'ととと', variants: [{ id: 'stumble', label: 'とととっ（よろける）', emoji: '💫' }] },
+  { reading: 'とろ', variants: [
+    { id: 'toro', label: 'トロ', emoji: '🍣', weight: 3 },
+    { id: 'pool', label: '瀞（川の淵）', emoji: '🏞️' },
+  ] },
+  // 後ろに単語が続くときは「とろとろX」（修飾）として解釈される
+  { reading: 'とろとろ', variants: [
+    { id: 'sleepy', label: 'とろとろ（ねむい）', emoji: '😪' },
+    { id: 'stew', label: 'とろとろ（煮込み）', emoji: '🍲' },
+  ] },
   { reading: 'ろと', variants: [
     { id: 'loto-sword', label: 'ロトの剣', emoji: '⚔️' },
     { id: 'loto6', label: 'ロト6', emoji: '🎱' },
@@ -37,6 +48,16 @@ export const DICTIONARY: WordEntry[] = [
   { reading: 'とろろ', variants: [{ id: 'tororo', label: 'とろろ', emoji: '🥣' }] },
   { reading: 'ととろ', variants: [{ id: 'totoro', label: 'ととろ', emoji: '🌳' }] },
 ];
+
+const pickVariant = (variants: WordVariant[], h: number) => {
+  const total = variants.reduce((sum, v) => sum + (v.weight ?? 1), 0);
+  let r = h % total;
+  for (const v of variants) {
+    r -= v.weight ?? 1;
+    if (r < 0) return v;
+  }
+  return variants[0];
+};
 
 export const MELT = 'とろとろ';
 
@@ -79,7 +100,7 @@ export function parseSentence(text: string, seed: number): Sentence | null {
     const out: PhraseOption[] = [];
     for (const entry of DICTIONARY) {
       if (text.startsWith(entry.reading, i)) {
-        const pick = entry.variants[hash(seed * 997 + i) % entry.variants.length];
+        const pick = pickVariant(entry.variants, hash(seed * 997 + i));
         out.push({ start: i, end: i + entry.reading.length, cost: COST_WORD, phrase: { word: pick, melt: 0 } });
       }
     }
