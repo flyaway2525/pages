@@ -10,7 +10,7 @@ const SEQUENCE_GAP_SEC = 0.04;
 
 type AudioCtor = typeof AudioContext;
 
-export type SequenceTiming = { phraseIndex: number; startMs: number; endMs: number };
+export type SequenceController = { setRate: (rate: number) => void; cancel: () => void };
 
 export function useToroSound() {
   const ctxRef = useRef<AudioContext | null>(null);
@@ -58,15 +58,16 @@ export function useToroSound() {
   }, []);
 
   /** 指定時刻に 1 音を予約し、その長さ（秒）を返す */
-  const schedule = useCallback((ctx: AudioContext, sound: string | undefined, kana: Kana, at: number) => {
+  const schedule = useCallback((ctx: AudioContext, sound: string | undefined, kana: Kana, at: number, rate = 1) => {
     const buffer = sound ? buffersRef.current.get(sound) : undefined;
     if (buffer) {
       const src = ctx.createBufferSource();
       src.buffer = buffer;
+      src.playbackRate.value = rate;
       src.connect(ctx.destination);
       src.start(at);
       playingRef.current.push(src);
-      return buffer.duration;
+      return buffer.duration / rate;
     }
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -100,25 +101,49 @@ export function useToroSound() {
     [prepare, schedule],
   );
 
-  /** 全文をつなげて再生し、各音のタイミング（ミリ秒）を返す */
+  /**
+   * 全文をつなげて 1 音ずつ順に再生する。
+   * 返り値の setRate で途中から速度を変えられる（早送り）。次の音から反映される。
+   */
   const playSequence = useCallback(
-    (items: { sound?: string; phraseIndex: number }[]): SequenceTiming[] => {
+    (
+      items: { sound?: string; phraseIndex: number }[],
+      handlers: { onStep: (phraseIndex: number, step: number) => void; onEnd: () => void },
+    ): SequenceController => {
       const ctx = prepare();
-      if (!ctx) return [];
-      const start = ctx.currentTime + 0.05;
-      let t = start;
-      return items.map((item) => {
-        const dur = schedule(ctx, item.sound, 'と', t);
-        const timing = {
-          phraseIndex: item.phraseIndex,
-          startMs: (t - ctx.currentTime) * 1000,
-          endMs: (t + dur - ctx.currentTime) * 1000,
-        };
-        t += dur + SEQUENCE_GAP_SEC;
-        return timing;
-      });
+      let rate = 1;
+      let step = 0;
+      let timer: number | null = null;
+      let stopped = false;
+
+      const next = () => {
+        timer = null;
+        if (stopped) return;
+        if (!ctx || step >= items.length) {
+          handlers.onEnd();
+          return;
+        }
+        const item = items[step];
+        handlers.onStep(item.phraseIndex, step);
+        playingRef.current = playingRef.current.slice(-4); // 終わった音の参照を溜めない
+        const dur = schedule(ctx, item.sound, 'と', ctx.currentTime, rate);
+        step += 1;
+        timer = window.setTimeout(next, (dur + SEQUENCE_GAP_SEC / rate) * 1000);
+      };
+      next();
+
+      return {
+        setRate: (r: number) => {
+          rate = r;
+        },
+        cancel: () => {
+          stopped = true;
+          if (timer !== null) window.clearTimeout(timer);
+          stop();
+        },
+      };
     },
-    [prepare, schedule],
+    [prepare, schedule, stop],
   );
 
   return { play, playSequence, stop };
