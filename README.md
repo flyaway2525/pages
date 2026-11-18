@@ -142,6 +142,16 @@ pages/
 2. 正解にしたい位置をクリック → 座標ラベル (`x: 0.XX, y: 0.XX`) が表示される
 3. [src/pages/ArtCraneGame.tsx](src/pages/ArtCraneGame.tsx) の `SAMPLE_QUESTIONS` 内 `targetPoint` を書き換える
 
+### 残像ドッジ (`/echo-dodge`)
+
+6秒前の自分が敵になるアクションゲーム。
+
+- 矢印キー / WASD、またはステージを押した（タッチした）場所へ移動
+- 黄色い玉を取るとスコア加算（残像が多いほど高得点）
+- 6秒ごとに直前6秒の自分の動きが残像になり、同じ軌跡をループし続ける（最大10体）
+- 実体化した残像に触れるとゲームオーバー。ベストスコアは localStorage に保存
+- ロジックは [src/hooks/useEchoDodgeGame.ts](src/hooks/useEchoDodgeGame.ts)、画面は [src/pages/EchoDodge.tsx](src/pages/EchoDodge.tsx)
+
 ### About / Works / Blog / Contact
 
 現時点では静的なプレースホルダーページです。

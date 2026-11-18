@@ -6,6 +6,7 @@ const links = [
   { to: '/data-derby', label: 'データダービー', desc: 'バーチャートレースの着順を予想' },
   { to: '/art-crane-game', label: '絵画クレーンゲーム', desc: '記憶頼りに絵画でクレーンゲーム' },
   { to: '/quantum-gomoku', label: '量子五目並べ', desc: '観測するまで確定しない量子五目並べ' },
+  { to: '/echo-dodge', label: '残像ドッジ', desc: '6秒前の自分が敵になるアクション' },
   { to: '/about', label: 'About', desc: '自己紹介・プロフィール' },
   { to: '/works', label: 'Works', desc: '制作物・ポートフォリオ' },
   { to: '/blog', label: 'Blog', desc: '記事・ノート' },
