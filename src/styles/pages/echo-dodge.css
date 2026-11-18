@@ -1,0 +1,135 @@
+.echo-dodge-page {
+  --feature-bg-start: #eef0ff;
+  --feature-bg-end: #f6e9f4;
+  --feature-accent-rgb: 79, 120, 255;
+  --feature-accent-strong-rgb: 255, 79, 168;
+  gap: 14px;
+}
+
+.echo-dodge-page h1 {
+  color: #1d1f4a;
+}
+
+.ed-description {
+  color: #4a4c7a;
+  font-size: 1.02rem;
+  margin-top: -4px;
+}
+
+.ed-hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  color: #34366a;
+  font-size: 0.95rem;
+}
+
+.ed-hud strong {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: #14163a;
+}
+
+.ed-best {
+  margin-left: auto;
+}
+
+.ed-stage {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(20, 22, 60, 0.25);
+}
+
+.ed-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.ed-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(13, 16, 32, 0.45);
+  text-align: center;
+  padding: 16px;
+}
+
+.page .ed-overlay p {
+  color: #e8eaff;
+}
+
+.page .ed-overlay .ed-overlay-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 14px rgba(255, 79, 168, 0.8);
+}
+
+.page .ed-overlay .ed-overlay-hint {
+  font-size: 0.82rem;
+  color: #aeb2e0;
+}
+
+.ed-start {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 32px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0d1020;
+  background: linear-gradient(180deg, #8ff6ff 0%, #4ff0ff 100%);
+  box-shadow: 0 0 18px rgba(79, 240, 255, 0.6);
+  cursor: pointer;
+}
+
+.ed-start:hover {
+  filter: brightness(1.08);
+}
+
+.ed-start:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.ed-rules {
+  max-width: 640px;
+  color: #34366a;
+}
+
+.ed-rules h2 {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.ed-rules ul {
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.6;
+}
+
+.ed-orb {
+  color: #b08a00;
+}
+
+.ed-echo {
+  color: #d6267f;
+}
+
+@media (max-width: 600px) {
+  .ed-best {
+    margin-left: 0;
+  }
+}
