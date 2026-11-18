@@ -92,8 +92,9 @@ const COST_WORD = 10;
 const COST_MELT = 5;
 const COST_NO_JOINER = 15;
 
-type PhraseOption = { end: number; cost: number; phrase: Phrase; start: number };
-type SentenceOption = { cost: number; phrases: Phrase[]; joiners: ('と' | '')[] };
+type PhraseOption = { end: number; cost: number; phrase: Phrase };
+/** 位置 i から文末までの最良の解釈（次の位置へのリンクで持つ） */
+type Best = { cost: number; phrase: Phrase; joiner: 'と' | '' | null; next: number };
 
 const hash = (n: number) => {
   let x = (n ^ 0x9e3779b9) >>> 0;
@@ -104,59 +105,55 @@ const hash = (n: number) => {
 
 /**
  * 文を解析する。コストが最小の解釈を返す。
+ * 文末から先頭へ向かって 1 回なめる動的計画法なので、長い文（数千文字）でも速い。
  * seed は同じ文の中で同音異義語の選択を安定させるために使う（入力のたびに戸→兎と変わらない）。
  */
 export function parseSentence(text: string, seed: number): Sentence | null {
   const n = text.length;
   if (n === 0) return null;
 
-  const phraseMemo = new Map<number, PhraseOption[]>();
-  const phrasesAt = (i: number): PhraseOption[] => {
-    const cached = phraseMemo.get(i);
-    if (cached) return cached;
-    const out: PhraseOption[] = [];
+  // best[i]: 位置 i から文末までを最小コストで解釈したときの先頭の単語
+  const best: (Best | null)[] = new Array(n + 1).fill(null);
+  for (let i = n - 1; i >= 0; i -= 1) {
+    let b: Best | null = null;
+    const consider = (cand: Best) => {
+      if (!b || cand.cost < b.cost) b = cand;
+    };
+    const words: PhraseOption[] = [];
     for (const entry of DICTIONARY) {
       if (text.startsWith(entry.reading, i)) {
         const pick = pickVariant(entry.variants, hash(seed * 997 + i));
-        out.push({ start: i, end: i + entry.reading.length, cost: COST_WORD, phrase: { word: pick, melt: 0 } });
+        words.push({ end: i + entry.reading.length, cost: COST_WORD, phrase: { word: pick, melt: 0 } });
       }
     }
-    if (text.startsWith(MELT, i)) {
-      for (const inner of phrasesAt(i + MELT.length)) {
-        out.push({ ...inner, start: i, cost: inner.cost + COST_MELT, phrase: { ...inner.phrase, melt: inner.phrase.melt + 1 } });
-      }
-    }
-    phraseMemo.set(i, out);
-    return out;
-  };
-
-  const sentenceMemo = new Map<number, SentenceOption | null>();
-  const sentenceAt = (i: number): SentenceOption | null => {
-    if (sentenceMemo.has(i)) return sentenceMemo.get(i) ?? null;
-    let best: SentenceOption | null = null;
-    const consider = (opt: SentenceOption) => {
-      if (!best || opt.cost < best.cost) best = opt;
-    };
-    for (const p of phrasesAt(i)) {
+    for (const p of words) {
       if (p.end === n) {
-        consider({ cost: p.cost, phrases: [p.phrase], joiners: [] });
+        consider({ cost: p.cost, phrase: p.phrase, joiner: null, next: -1 });
         continue;
       }
-      if (text[p.end] === 'と') {
-        const rest = sentenceAt(p.end + 1);
-        if (rest) consider({ cost: p.cost + rest.cost, phrases: [p.phrase, ...rest.phrases], joiners: ['と', ...rest.joiners] });
-      }
-      const rest = sentenceAt(p.end);
-      if (rest) {
-        consider({ cost: p.cost + COST_NO_JOINER + rest.cost, phrases: [p.phrase, ...rest.phrases], joiners: ['', ...rest.joiners] });
+      const afterJoiner = text[p.end] === 'と' ? best[p.end + 1] : null;
+      if (afterJoiner) consider({ cost: p.cost + afterJoiner.cost, phrase: p.phrase, joiner: 'と', next: p.end + 1 });
+      const adjacent = best[p.end];
+      if (adjacent) {
+        consider({ cost: p.cost + COST_NO_JOINER + adjacent.cost, phrase: p.phrase, joiner: '', next: p.end });
       }
     }
-    sentenceMemo.set(i, best);
-    return best;
-  };
+    // 「とろとろ」+ 後ろの最良の解釈 → 後ろの先頭の単語を溶かす
+    const melted = text.startsWith(MELT, i) ? best[i + MELT.length] : null;
+    if (melted) {
+      consider({ ...melted, cost: melted.cost + COST_MELT, phrase: { ...melted.phrase, melt: melted.phrase.melt + 1 } });
+    }
+    best[i] = b;
+  }
 
-  const best = sentenceAt(0);
-  return best ? { phrases: best.phrases, joiners: best.joiners } : null;
+  if (!best[0]) return null;
+  const phrases: Phrase[] = [];
+  const joiners: ('と' | '')[] = [];
+  for (let cur: Best | null = best[0]; cur; cur = cur.next >= 0 ? best[cur.next] : null) {
+    phrases.push(cur.phrase);
+    if (cur.joiner !== null) joiners.push(cur.joiner);
+  }
+  return { phrases, joiners };
 }
 
 export const phraseLabel = (p: Phrase) => `${'とろとろの'.repeat(p.melt)}${p.word.label}`;

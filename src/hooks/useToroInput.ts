@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Kana } from '../lib/toroParser';
 
 export const CUT_MS = 1000;
-const MAX_LENGTH = 16;
+export const MAX_LENGTH = 10000;
 
 export type ToroInputState = {
   text: string;
