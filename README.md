@@ -152,6 +152,18 @@ pages/
 - 実体化した残像に触れるとゲームオーバー。ベストスコアは localStorage に保存
 - ロジックは [src/hooks/useEchoDodgeGame.ts](src/hooks/useEchoDodgeGame.ts)、画面は [src/pages/EchoDodge.tsx](src/pages/EchoDodge.tsx)
 
+### とろ (`/toro`)
+
+「と」と「ろ」の2ボタンだけで遊ぶ、スマホ向けの言葉あそび。
+
+- ボタンを押すと音が鳴り、入力した文字が下に、その意味の絵が上に表示される
+- 1秒以上入力がないと文が切れ、次の入力から新しい文になる
+- 単語: と(戸/都/兎)、ろ(炉/路)、とと、とろ、ろと、とろろ、ととろ
+- 文法: `とろとろX` → Xがとろとろになる（重ねがけ可）、`XとY` → XとYが並ぶ
+- 見つけた単語・文法は図鑑に記録（localStorage）。PC では T / R キーでも入力できる
+- 単語と文法は [src/lib/toroParser.ts](src/lib/toroParser.ts) の `DICTIONARY` で管理。`image` に `public/` からの相対パスを書くと、絵文字の代わりにその画像を表示する
+- 音源: `public/sounds/toro/to.mp3` と `ro.mp3` を置くと再生される（置いていない場合は合成音）
+
 ### About / Works / Blog / Contact
 
 現時点では静的なプレースホルダーページです。
