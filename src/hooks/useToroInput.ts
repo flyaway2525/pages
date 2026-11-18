@@ -45,6 +45,15 @@ export function useToroInput(onClose: (text: string, sentenceId: number) => void
     return next;
   }, []);
 
+  /** 入力を空に戻す（リザルトから次のゲームへ） */
+  const reset = useCallback(() => {
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    timerRef.current = null;
+    const next = { ...stateRef.current, text: '', closed: true };
+    stateRef.current = next;
+    setState(next);
+  }, []);
+
   useEffect(
     () => () => {
       if (timerRef.current !== null) window.clearTimeout(timerRef.current);
@@ -52,5 +61,5 @@ export function useToroInput(onClose: (text: string, sentenceId: number) => void
     [],
   );
 
-  return { state, press };
+  return { state, press, reset };
 }
