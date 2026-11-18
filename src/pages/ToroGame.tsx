@@ -47,8 +47,10 @@ export default function ToroGame() {
 
   const hit = useCallback(
     (kana: Kana) => {
-      playSound(kana);
-      press(kana);
+      // 押した結果できた文の、最後の単語の声を鳴らす（と → 戸、続けて ろ → トロ）
+      const next = press(kana);
+      const parsed = parseSentence(next.text, next.sentenceId);
+      playSound(parsed?.phrases.at(-1)?.word.sound, kana);
     },
     [playSound, press],
   );

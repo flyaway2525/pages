@@ -164,7 +164,8 @@ pages/
 - 文法: `とろとろX` → Xがとろとろになる（重ねがけ可）、`XとY` → XとYが並ぶ
 - 見つけた単語・文法は図鑑に記録（localStorage）。PC では T / R キーでも入力できる
 - 単語と文法は [src/lib/toroParser.ts](src/lib/toroParser.ts) の `DICTIONARY` で管理。`image` に `public/` からの相対パスを書くと、絵文字の代わりにその画像を表示する
-- 音源: `public/sounds/toro/to.mp3` と `ro.mp3` を置くと再生される（置いていない場合は合成音）
+- 音声: ボタンを押すたびに、その時点で最後にできた単語の声を再生（と → 戸の声、続けて ろ → トロの声）。連打時は前の声を止める
+- 音声ファイルは `public/sounds/toro/` に置き、`DICTIONARY` の各単語の `sound` で指定する（指定なし・読み込み失敗時は合成音）
 
 ### About / Works / Blog / Contact
 

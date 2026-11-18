@@ -10,44 +10,51 @@ export type WordVariant = {
   image?: string;
   /** 同じ読みの中での出やすさ（省略時 1） */
   weight?: number;
+  /** public/ 以下の音声パス。この単語ができた瞬間に再生する */
+  sound?: string;
 };
 
 type WordEntry = { reading: string; variants: WordVariant[] };
+
+const S = 'sounds/toro/';
 
 export const DICTIONARY: WordEntry[] = [
   {
     reading: 'と',
     variants: [
-      { id: 'door', label: '戸', emoji: '🚪' },
-      { id: 'capital', label: '都', emoji: '🏯' },
-      { id: 'rabbit', label: '兎', emoji: '🐇' },
+      { id: 'door', label: '戸', emoji: '🚪', sound: `${S}to1.wav` },
+      { id: 'capital', label: '都', emoji: '🏯', sound: `${S}to2.wav` },
+      { id: 'rabbit', label: '兎', emoji: '🐇', sound: `${S}to3.wav` },
     ],
   },
   {
     reading: 'ろ',
     variants: [
-      { id: 'furnace', label: '炉', emoji: '🔥' },
-      { id: 'road', label: '路', emoji: '🛤️' },
+      { id: 'furnace', label: '炉', emoji: '🔥', sound: `${S}ro.wav` },
+      { id: 'road', label: '路', emoji: '🛤️', sound: `${S}ro.wav` },
     ],
   },
-  { reading: 'とと', variants: [{ id: 'fish', label: 'とと（おさかな）', emoji: '🐟' }] },
-  { reading: 'ととと', variants: [{ id: 'stumble', label: 'とととっ（よろける）', emoji: '💫' }] },
+  { reading: 'とと', variants: [{ id: 'fish', label: 'とと（おさかな）', emoji: '🐟', sound: `${S}toto.wav` }] },
+  { reading: 'ととと', variants: [{ id: 'stumble', label: 'とととっ（よろける）', emoji: '💫', sound: `${S}tototo.wav` }] },
   { reading: 'とろ', variants: [
-    { id: 'toro', label: 'トロ', emoji: '🍣', weight: 3 },
-    { id: 'pool', label: '瀞（川の淵）', emoji: '🏞️' },
+    { id: 'toro', label: 'トロ', emoji: '🍣', weight: 3, sound: `${S}toro.wav` },
+    { id: 'pool', label: '瀞（川の淵）', emoji: '🏞️', sound: `${S}toro.wav` },
   ] },
   // 後ろに単語が続くときは「とろとろX」（修飾）として解釈される
   { reading: 'とろとろ', variants: [
-    { id: 'sleepy', label: 'とろとろ（ねむい）', emoji: '😪' },
-    { id: 'stew', label: 'とろとろ（煮込み）', emoji: '🍲' },
+    { id: 'sleepy', label: 'とろとろ（ねむい）', emoji: '😪', sound: `${S}torotoro.wav` },
+    { id: 'stew', label: 'とろとろ（煮込み）', emoji: '🍲', sound: `${S}torotoro.wav` },
   ] },
   { reading: 'ろと', variants: [
-    { id: 'loto-sword', label: 'ロトの剣', emoji: '⚔️' },
-    { id: 'loto6', label: 'ロト6', emoji: '🎱' },
+    { id: 'loto-sword', label: 'ロトの剣', emoji: '⚔️', sound: `${S}roto1.wav` },
+    { id: 'loto6', label: 'ロト6', emoji: '🎱', sound: `${S}roto2.wav` },
   ] },
-  { reading: 'とろろ', variants: [{ id: 'tororo', label: 'とろろ', emoji: '🥣' }] },
-  { reading: 'ととろ', variants: [{ id: 'totoro', label: 'ととろ', emoji: '🌳' }] },
+  { reading: 'とろろ', variants: [{ id: 'tororo', label: 'とろろ', emoji: '🥣', sound: `${S}tororo.wav` }] },
+  { reading: 'ととろ', variants: [{ id: 'totoro', label: 'ととろ', emoji: '🌳', sound: `${S}totoro.wav` }] },
 ];
+
+/** 辞書に登録されている音声ファイル（重複なし） */
+export const ALL_SOUNDS = [...new Set(DICTIONARY.flatMap((w) => w.variants.flatMap((v) => (v.sound ? [v.sound] : []))))];
 
 const pickVariant = (variants: WordVariant[], h: number) => {
   const total = variants.reduce((sum, v) => sum + (v.weight ?? 1), 0);

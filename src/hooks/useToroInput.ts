@@ -42,6 +42,7 @@ export function useToroInput(onClose: (text: string, sentenceId: number) => void
       setState(closed);
       onCloseRef.current(cur.text, cur.sentenceId);
     }, CUT_MS);
+    return next;
   }, []);
 
   useEffect(

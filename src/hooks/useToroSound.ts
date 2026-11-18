@@ -1,50 +1,69 @@
-import { useCallback, useRef } from 'react';
-import type { Kana } from '../lib/toroParser';
+import { useCallback, useEffect, useRef } from 'react';
+import { ALL_SOUNDS, type Kana } from '../lib/toroParser';
 
-// 音源は public/sounds/toro/to.mp3 と ro.mp3 に置くと使われる。
-// 見つからない場合は Web Audio で合成した短い音を鳴らす。
-const SOUND_FILES: Record<Kana, string> = {
-  と: 'sounds/toro/to.mp3',
-  ろ: 'sounds/toro/ro.mp3',
-};
-
+// 単語ごとの音声（辞書の sound）を先読みしておき、押した瞬間に鳴らす。
+// 音声が読み込めていない単語は Web Audio の合成音で代用する。
 const FALLBACK_FREQ: Record<Kana, number> = { と: 880, ろ: 587 };
+
+type AudioCtor = typeof AudioContext;
 
 export function useToroSound() {
   const ctxRef = useRef<AudioContext | null>(null);
-  const buffersRef = useRef<Partial<Record<Kana, AudioBuffer>>>({});
+  const buffersRef = useRef(new Map<string, AudioBuffer>());
+  const currentRef = useRef<AudioScheduledSourceNode | null>(null);
 
-  const ensureContext = useCallback(() => {
+  const getContext = useCallback(() => {
     if (ctxRef.current) return ctxRef.current;
-    const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    const Ctor: AudioCtor | undefined =
+      window.AudioContext ?? (window as unknown as { webkitAudioContext?: AudioCtor }).webkitAudioContext;
     if (!Ctor) return null;
-    const ctx = new Ctor();
-    ctxRef.current = ctx;
-    (Object.keys(SOUND_FILES) as Kana[]).forEach(async (kana) => {
-      try {
-        const res = await fetch(`${import.meta.env.BASE_URL}${SOUND_FILES[kana]}`);
-        if (!res.ok) return;
-        buffersRef.current[kana] = await ctx.decodeAudioData(await res.arrayBuffer());
-      } catch {
-        /* 音源なし → 合成音で代用 */
-      }
-    });
-    return ctx;
+    ctxRef.current = new Ctor();
+    return ctxRef.current;
   }, []);
 
+  // ページを開いた時点で全音声を読み込む（最初のタップから声が出るように）
+  useEffect(() => {
+    const ctx = getContext();
+    if (!ctx) return;
+    let cancelled = false;
+    ALL_SOUNDS.forEach(async (path) => {
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}${path}`);
+        if (!res.ok) return;
+        const buffer = await ctx.decodeAudioData(await res.arrayBuffer());
+        if (!cancelled) buffersRef.current.set(path, buffer);
+      } catch {
+        /* 読めなければ合成音 */
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [getContext]);
+
   const play = useCallback(
-    (kana: Kana) => {
-      const ctx = ensureContext();
+    (sound: string | undefined, kana: Kana) => {
+      const ctx = getContext();
       if (!ctx) return;
       if (ctx.state === 'suspended') void ctx.resume();
-      const buffer = buffersRef.current[kana];
+
+      // 素早く連打したとき声が重ならないよう、前の音は止める
+      try {
+        currentRef.current?.stop();
+      } catch {
+        /* すでに止まっている */
+      }
+
+      const buffer = sound ? buffersRef.current.get(sound) : undefined;
       if (buffer) {
         const src = ctx.createBufferSource();
         src.buffer = buffer;
         src.connect(ctx.destination);
         src.start();
+        currentRef.current = src;
         return;
       }
+
       const t = ctx.currentTime;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -57,8 +76,9 @@ export function useToroSound() {
       osc.connect(gain).connect(ctx.destination);
       osc.start(t);
       osc.stop(t + 0.2);
+      currentRef.current = osc;
     },
-    [ensureContext],
+    [getContext],
   );
 
   return play;
